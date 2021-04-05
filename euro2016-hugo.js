@@ -30,12 +30,10 @@ const face = {
   x: -1,
   y: -1,
 };
-let crdSelect;
-let cntSelect;
+
 const CARDSIZE = 100; // tamanho da carta (altura e largura)
 let faces = []; // Array que armazena objectos face que contêm posicionamentos da imagem e códigos dos paises
-let cartas = [];
-
+let cartaSelecionada;
 window.addEventListener('load', init, false);
 
 function init() {
@@ -43,51 +41,69 @@ function init() {
   //setupAudio(); // configurar o audio
   getFaces(); // calcular as faces e guardar no array faces
   createCountries(); // criar países
-  scramble();
-	// tempo();
-	hideCards();
-
+  tempo();
   // game.sounds.background.play();
 
   //completar
 }
-function virarCarta(){
-	this.classList.remove('escondida');
+let count = [];
+let countdown = 0;
+function click() {
+  if (count.length < 1) {
+		this.classList.remove('escondida');
+  	count.push(this);
+		countdown++;
+	}else{
+		countdown=0;
+		
+		//Isto vai ter de ser com temporizador para mostrar durante uns segundos
+		count.map((e) => e.classList.add('escondida'));
+		count=[];
+	}	
 }
+
 // Cria os paises e coloca-os no tabuleiro de jogo(array board[][])
 function createCountries() {
   /* DICA:
-	Seja umaCarta um elemento DIV, a imagem de carta pode ser obtida nos objetos armazenados no array faces[]; o verso da capa 
-	está armazenado na ultima posicao do array faces[]. Pode também ser obtido através do seletor de classe .escondida do CSS.
-		umaCarta.classList.add("carta"); 	
-		umaCarta.style.backgroundPositionX=faces[0].x;
-		umaCarta.style.backgroundPositionX=faces[0].y;
+     Seja umaCarta um elemento DIV, a imagem de carta pode ser obtida nos objetos armazenados no array faces[]; o verso da capa 
+     está armazenado na ultima posicao do array faces[]. Pode também ser obtido através do seletor de classe .escondida do CSS.
+       umaCarta.classList.add("carta"); 	
+       umaCarta.style.backgroundPositionX=faces[0].x;
+       umaCarta.style.backgroundPositionX=faces[0].y;
+   
+       Colocar uma carta escondida:
+         umaCarta.classList.add("escondida");
+         
+       virar a carta:
+         umaCarta.classList.remove("escondida");
+       */
 
-		Colocar uma carta escondida:
-			umaCarta.classList.add("escondida");
-			
-		virar a carta:
-			umaCarta.classList.remove("escondida");
-    */
-	
-	let cartas = [];
+  let cartas = [];
 
-	 for (var i=0 ; i<2; c++){
-	 	for (var c=0; c<24; c++){
-			let carta = document.createElement('div');
-     	carta = document.createElement('div');
+  for (var x = 0; x < 2; x++) {
+    for (var y = 0; y < 24; y++) {
+      carta = document.createElement('div');
       carta.classList.add('carta');
-      // carta.classList.add('escondida');
-			carta.addEventListener('click', virarCarta);
-      carta.style.backgroundPositionX = faces[c].x;
-      carta.style.backgroundPositionY = faces[c].y;
+      carta.classList.add('escondida');
+      carta.style.backgroundPositionX = faces[y].x;
+      carta.style.backgroundPositionY = faces[y].y;
+      carta.addEventListener('click', click);
       cartas.push(carta);
-	 	};
-	 };
-	 
+    }
+  }
+
+  for (var x = 0; x < 6; x++) {
+    for (var y = 0; y < 8; y++) {
+      let rndm = Math.floor(Math.random() * cartas.length);
+      game.stage.appendChild(cartas[rndm]);
+      cartas[rndm].style.left = CARDSIZE * y + 'px';
+      cartas[rndm].style.top = CARDSIZE * x + 'px';
+      game.board[x][y] = cartas[rndm];
+      cartas.splice(rndm, 1);
+    }
+  }
 }
 
-// Adicionar as cartas do tabuleiro à stage
 function render() {}
 
 function tempo() {
@@ -99,51 +115,21 @@ function tempo() {
     if (contador === maxCount - 5)
       document.getElementById('time').classList.add('warning');
     if (contador === maxCount) {
-      //clearInterval(timeHandler);
-      contador=0;
-			document.getElementById('time').classList.remove('warning');
-			scramble();
+      clearInterval(timeHandler);
+      document.getElementById('time').classList.remove('warning');
       timer = setInterval(function () {
-        render();
+        tempo();
       }, 1000);
     }
   }, 1000);
 }
 
 // baralha as cartas no tabuleiro
-function scramble() {
-let rndm;
-// let crds = cartas;
-  for (var x=0 ; x<6; x++){
-  	for (var y=0; y<8; y++){
-		 rndm = Math.floor(Math.random() * crds.length);
-		 game.stage.appendChild(crds[rndm]);
-		 crds[rndm].style.left = CARDSIZE * y + 'px';
-     crds[rndm].style.top = CARDSIZE * x + 'px';
-		 game.board[x][y] = crds[rndm];
-		 crds.splice(rndm,1);
-  	};
-  };
-}
+function scramble() {}
 
-function hideCards() {
-  let contador = 0;
-  let maxCount = 5;
-  let timeHandler = setInterval(() => {
-    contador++;
-    if (contador === maxCount) {
-			 let hide = document.querySelectorAll('.carta').classList.add('escondida');
-      // clearInterval(timeHandler);
-			//  game.board.forEach(cln => cln.forEach (rws => rws.forEach(crd => crd.classList.add('escondida '))));
-			scramble();
-      tempo();
-    }
-  }, 1000);
-}
-/* 
-------------------------------------------------------------------------------------------------  
- ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
--------------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------  
+    ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
+   -------------------------------------------------------------------------------------------------- */
 
 // configuração do audio
 function setupAudio() {
@@ -179,5 +165,5 @@ function getFaces() {
 }
 
 /* ------------------------------------------------------------------------------------------------  
- ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
--------------------------------------------------------------------------------------------------- */
+    ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
+   -------------------------------------------------------------------------------------------------- */
