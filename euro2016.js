@@ -30,11 +30,13 @@ const face = {
   x: -1,
   y: -1,
 };
-let crdSelect;
-let cntSelect;
+
 const CARDSIZE = 100; // tamanho da carta (altura e largura)
 let faces = []; // Array que armazena objectos face que contêm posicionamentos da imagem e códigos dos paises
+
 let cartas = [];
+let crdSelect;
+let cntSelect=0;
 
 window.addEventListener('load', init, false);
 
@@ -43,8 +45,8 @@ function init() {
   //setupAudio(); // configurar o audio
   getFaces(); // calcular as faces e guardar no array faces
   createCountries(); // criar países
-  scramble();
-	// tempo();
+	// scramble();
+  tempo();
 	hideCards();
 
   // game.sounds.background.play();
@@ -52,7 +54,30 @@ function init() {
   //completar
 }
 function virarCarta(){
+	// carta.style.backgroundPositionX = faces[y].x;
+  // carta.style.backgroundPositionY = faces[y].y;
 	this.classList.remove('escondida');
+	if (cntSelect===0){
+		crdSelect=this;
+		console.log(this)
+		cntSelect++;
+	}else{
+		if (crdSelect.style.backgroundPositionX === this.style.backgroundPositionX 
+		&& crdSelect.style.backgroundPositionY === this.style.backgroundPositionY){
+			console.log("YUP");
+			this.removeEventListener('click');
+			crdSelect.removeEventListener('click');
+			cntSelect = 0;
+			crdSelect=null;
+			
+		}else{
+			crdSelect.classList.add('escondida');
+			this.classList.add('escondida');
+			console.log("NOPE");
+			cntSelect = 0;
+			crdSelect= null;	
+		}
+	}
 }
 // Cria os paises e coloca-os no tabuleiro de jogo(array board[][])
 function createCountries() {
@@ -69,22 +94,60 @@ function createCountries() {
 		virar a carta:
 			umaCarta.classList.remove("escondida");
     */
-	
-	let cartas = [];
+	/*
+	 let cartas = [];
 
 	 for (var i=0 ; i<2; c++){
 	 	for (var c=0; c<24; c++){
 			let carta = document.createElement('div');
-     	carta = document.createElement('div');
       carta.classList.add('carta');
-      // carta.classList.add('escondida');
-			carta.addEventListener('click', virarCarta);
+      carta.classList.add('escondida');
       carta.style.backgroundPositionX = faces[c].x;
       carta.style.backgroundPositionY = faces[c].y;
+			carta.addEventListener('click', virarCarta);
       cartas.push(carta);
 	 	};
 	 };
-	 
+	let rndm = 0;
+	console.log(cartas);
+  let crds = cartas;
+  for (var y=0 ; y<6; x++){
+  	for (var x=0; x<8; y++){
+		 rndm = Math.floor(Math.random() * crds.length);
+		 console.log("RND: "+ rndm);
+		 console.log("CRDS: " + crds);
+		 game.stage.appendChild(crds[rndm]);
+		 crds[rndm].style.left = CARDSIZE * x + 'px';
+     crds[rndm].style.top = CARDSIZE * y + 'px';
+		 game.board[y][x] = crds[rndm];
+		 crds.splice(rndm,1);
+  	};
+  };
+} */
+// let cartas = [];
+
+  for (var x = 0; x < 2; x++) {
+    for (var y = 0; y < 24; y++) {
+      carta = document.createElement('div');
+      carta.classList.add('carta');
+      // carta.classList.add('escondida');
+      carta.style.backgroundPositionX = faces[y].x;
+      carta.style.backgroundPositionY = faces[y].y;
+      carta.addEventListener('click', virarCarta);
+      cartas.push(carta);
+    };
+  };
+
+  for (var x = 0; x < 6; x++) {
+    for (var y = 0; y < 8; y++) {
+      let rndm = Math.floor(Math.random() * cartas.length);
+      game.stage.appendChild(cartas[rndm]);
+      cartas[rndm].style.left = CARDSIZE * y + 'px';
+      cartas[rndm].style.top = CARDSIZE * x + 'px';
+      game.board[x][y] = cartas[rndm];
+      cartas.splice(rndm, 1);
+    };
+  };
 }
 
 // Adicionar as cartas do tabuleiro à stage
@@ -113,7 +176,7 @@ function tempo() {
 // baralha as cartas no tabuleiro
 function scramble() {
 let rndm;
-// let crds = cartas;
+ let crds = cartas;
   for (var x=0 ; x<6; x++){
   	for (var y=0; y<8; y++){
 		 rndm = Math.floor(Math.random() * crds.length);
@@ -132,7 +195,8 @@ function hideCards() {
   let timeHandler = setInterval(() => {
     contador++;
     if (contador === maxCount) {
-			 let hide = document.querySelectorAll('.carta').classList.add('escondida');
+			//  let hide = document.querySelectorAll('#carta');
+			//  hide.forEach(carta => carta.classList.add('escondida'));
       // clearInterval(timeHandler);
 			//  game.board.forEach(cln => cln.forEach (rws => rws.forEach(crd => crd.classList.add('escondida '))));
 			scramble();
