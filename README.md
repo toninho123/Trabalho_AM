@@ -1,5 +1,4 @@
-# Aplicações Multimédia - Jogo da Memória
-Disciplina : Aplicações Multimédia, 2ºLINF
+# Aplicações Multimédia - Jogo da Memória, 2ºLINF
 Elaborado por:
 * Hugo Duarte
 * João Jesus
