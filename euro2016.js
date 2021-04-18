@@ -31,12 +31,21 @@ const face = {
   y: -1,
 };
 
+var carta = {
+	flipped: false,
+	done: false,
+	imgX: 0,
+	imgY: 0,
+	posX: 0,
+	posY: 0
+};
+
 const CARDSIZE = 100; // tamanho da carta (altura e largura)
 let faces = []; // Array que armazena objectos face que contêm posicionamentos da imagem e códigos dos paises
 
 let cartas = [];
 let crdSelect;
-let cntSelect=0;
+let cntSelect = 0;
 
 window.addEventListener('load', init, false);
 
@@ -45,88 +54,101 @@ function init() {
   //setupAudio(); // configurar o audio
   getFaces(); // calcular as faces e guardar no array faces
   createCountries(); // criar países
-	// scramble();
+  // scramble();
   tempo();
-	hideCards();
+  hideCards();
 
   // game.sounds.background.play();
 
   //completar
 }
-function virarCarta(){
-	// carta.style.backgroundPositionX = faces[y].x;
+function virarCarta() {
+  // carta.style.backgroundPositionX = faces[y].x;
   // carta.style.backgroundPositionY = faces[y].y;
-	this.classList.remove('escondida');
-	if (cntSelect===0){
-		crdSelect=this;
-		console.log(this)
-		cntSelect++;
-	}else{
-		if (crdSelect.style.backgroundPositionX === this.style.backgroundPositionX 
-		&& crdSelect.style.backgroundPositionY === this.style.backgroundPositionY){
-			console.log("YUP");
-			this.removeEventListener('click');
-			crdSelect.removeEventListener('click');
-			cntSelect = 0;
-			crdSelect=null;
-			
-		}else{
-			crdSelect.classList.add('escondida');
-			this.classList.add('escondida');
-			console.log("NOPE");
-			cntSelect = 0;
-			crdSelect= null;	
-		}
-	}
+	console.log(isProcessing);
+	if (isProcessing === true) {
+		console.log("FDS")
+				 return;
+	};			
+  if (this === crdSelect) return;
+  this.classList.remove('escondida');
+  if (cntSelect === 0) {
+    crdSelect = this;
+    cntSelect++;
+  } else {
+    if (
+      crdSelect.style.backgroundPositionX === this.style.backgroundPositionX &&
+      crdSelect.style.backgroundPositionY === this.style.backgroundPositionY
+    ) {
+      console.log('YUP');
+      this.removeEventListener('click', virarCarta);
+      crdSelect.removeEventListener('click', virarCarta);
+      cntSelect = 0;
+      crdSelect = null;
+    } else {
+			isProcessing = true;
+			let timeHandler = setInterval(() => {
+        crdSelect.classList.add('escondida');
+        this.classList.add('escondida');
+        console.log('NOPE');
+        cntSelect = 0;
+        crdSelect = null;
+        clearInterval(timeHandler);
+				isProcessing=false;
+				console.log(isProcessing);
+      }, 1000);
+    }
+  }
 }
 // Cria os paises e coloca-os no tabuleiro de jogo(array board[][])
 function createCountries() {
   /* DICA:
-	Seja umaCarta um elemento DIV, a imagem de carta pode ser obtida nos objetos armazenados no array faces[]; o verso da capa 
-	está armazenado na ultima posicao do array faces[]. Pode também ser obtido através do seletor de classe .escondida do CSS.
-		umaCarta.classList.add("carta"); 	
-		umaCarta.style.backgroundPositionX=faces[0].x;
-		umaCarta.style.backgroundPositionX=faces[0].y;
-
-		Colocar uma carta escondida:
-			umaCarta.classList.add("escondida");
-			
-		virar a carta:
-			umaCarta.classList.remove("escondida");
-    */
-	/*
-	 let cartas = [];
-
-	 for (var i=0 ; i<2; c++){
-	 	for (var c=0; c<24; c++){
-			let carta = document.createElement('div');
-      carta.classList.add('carta');
-      carta.classList.add('escondida');
-      carta.style.backgroundPositionX = faces[c].x;
-      carta.style.backgroundPositionY = faces[c].y;
-			carta.addEventListener('click', virarCarta);
-      cartas.push(carta);
-	 	};
-	 };
-	let rndm = 0;
-	console.log(cartas);
-  let crds = cartas;
-  for (var y=0 ; y<6; x++){
-  	for (var x=0; x<8; y++){
-		 rndm = Math.floor(Math.random() * crds.length);
-		 console.log("RND: "+ rndm);
-		 console.log("CRDS: " + crds);
-		 game.stage.appendChild(crds[rndm]);
-		 crds[rndm].style.left = CARDSIZE * x + 'px';
-     crds[rndm].style.top = CARDSIZE * y + 'px';
-		 game.board[y][x] = crds[rndm];
-		 crds.splice(rndm,1);
-  	};
-  };
-} */
-// let cartas = [];
+   Seja umaCarta um elemento DIV, a imagem de carta pode ser obtida nos objetos armazenados no array faces[]; o verso da capa 
+   está armazenado na ultima posicao do array faces[]. Pode também ser obtido através do seletor de classe .escondida do CSS.
+     umaCarta.classList.add("carta"); 	
+     umaCarta.style.backgroundPositionX=faces[0].x;
+     umaCarta.style.backgroundPositionX=faces[0].y;
+ 
+     Colocar uma carta escondida:
+       umaCarta.classList.add("escondida");
+       
+     virar a carta:
+       umaCarta.classList.remove("escondida");
+     */
+  /*
+    let cartas = [];
+ 
+    for (var i=0 ; i<2; c++){
+      for (var c=0; c<24; c++){
+       let carta = document.createElement('div');
+       carta.classList.add('carta');
+       carta.classList.add('escondida');
+       carta.style.backgroundPositionX = faces[c].x;
+       carta.style.backgroundPositionY = faces[c].y;
+       carta.addEventListener('click', virarCarta);
+       cartas.push(carta);
+      };
+    };
+   let rndm = 0;
+   console.log(cartas);
+   let crds = cartas;
+   for (var y=0 ; y<6; x++){
+     for (var x=0; x<8; y++){
+      rndm = Math.floor(Math.random() * crds.length);
+      console.log("RND: "+ rndm);
+      console.log("CRDS: " + crds);
+      game.stage.appendChild(crds[rndm]);
+      crds[rndm].style.left = CARDSIZE * x + 'px';
+      crds[rndm].style.top = CARDSIZE * y + 'px';
+      game.board[y][x] = crds[rndm];
+      crds.splice(rndm,1);
+     };
+   };
+ } */
+  // let cartas = [];
 
   for (var x = 0; x < 2; x++) {
+		
     for (var y = 0; y < 24; y++) {
       carta = document.createElement('div');
       carta.classList.add('carta');
@@ -135,8 +157,8 @@ function createCountries() {
       carta.style.backgroundPositionY = faces[y].y;
       carta.addEventListener('click', virarCarta);
       cartas.push(carta);
-    };
-  };
+    }
+  }
 
   for (var x = 0; x < 6; x++) {
     for (var y = 0; y < 8; y++) {
@@ -146,8 +168,8 @@ function createCountries() {
       cartas[rndm].style.top = CARDSIZE * x + 'px';
       game.board[x][y] = cartas[rndm];
       cartas.splice(rndm, 1);
-    };
-  };
+    }
+  }
 }
 
 // Adicionar as cartas do tabuleiro à stage
@@ -163,9 +185,9 @@ function tempo() {
       document.getElementById('time').classList.add('warning');
     if (contador === maxCount) {
       //clearInterval(timeHandler);
-      contador=0;
-			document.getElementById('time').classList.remove('warning');
-			scramble();
+      contador = 0;
+      document.getElementById('time').classList.remove('warning');
+      //scramble();
       timer = setInterval(function () {
         render();
       }, 1000);
@@ -175,18 +197,18 @@ function tempo() {
 
 // baralha as cartas no tabuleiro
 function scramble() {
-let rndm;
- let crds = cartas;
-  for (var x=0 ; x<6; x++){
-  	for (var y=0; y<8; y++){
-		 rndm = Math.floor(Math.random() * crds.length);
-		 game.stage.appendChild(crds[rndm]);
-		 crds[rndm].style.left = CARDSIZE * y + 'px';
-     crds[rndm].style.top = CARDSIZE * x + 'px';
-		 game.board[x][y] = crds[rndm];
-		 crds.splice(rndm,1);
-  	};
-  };
+  let rndm;
+  let crds = cartas;
+  for (var x = 0; x < 6; x++) {
+    for (var y = 0; y < 8; y++) {
+      rndm = Math.floor(Math.random() * crds.length);
+      game.stage.appendChild(crds[rndm]);
+      crds[rndm].style.left = CARDSIZE * y + 'px';
+      crds[rndm].style.top = CARDSIZE * x + 'px';
+      game.board[x][y] = crds[rndm];
+      crds.splice(rndm, 1);
+    }
+  }
 }
 
 function hideCards() {
@@ -195,19 +217,19 @@ function hideCards() {
   let timeHandler = setInterval(() => {
     contador++;
     if (contador === maxCount) {
-			//  let hide = document.querySelectorAll('#carta');
-			//  hide.forEach(carta => carta.classList.add('escondida'));
+      //  let hide = document.querySelectorAll('#carta');
+      //  hide.forEach(carta => carta.classList.add('escondida'));
       // clearInterval(timeHandler);
-			//  game.board.forEach(cln => cln.forEach (rws => rws.forEach(crd => crd.classList.add('escondida '))));
-			scramble();
+      //  game.board.forEach(cln => cln.forEach (rws => rws.forEach(crd => crd.classList.add('escondida '))));
+      scramble();
       tempo();
     }
   }, 1000);
 }
 /* 
-------------------------------------------------------------------------------------------------  
- ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
--------------------------------------------------------------------------------------------------- */
+ ------------------------------------------------------------------------------------------------  
+  ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
+ -------------------------------------------------------------------------------------------------- */
 
 // configuração do audio
 function setupAudio() {
@@ -243,5 +265,5 @@ function getFaces() {
 }
 
 /* ------------------------------------------------------------------------------------------------  
- ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
--------------------------------------------------------------------------------------------------- */
+  ** /!\ NÃO MODIFICAR ESTAS FUNÇÕES /!\
+ -------------------------------------------------------------------------------------------------- */
