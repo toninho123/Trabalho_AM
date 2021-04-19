@@ -67,7 +67,7 @@ function restart(e) {
 function virarCarta() {
 	// carta.style.backgroundPositionX = faces[y].x;
 	// carta.style.backgroundPositionY = faces[y].y;
-	console.log(isProcessing);
+	// console.log(isProcessing);
 	if (isProcessing === true) {
 		return;
 	}
@@ -81,7 +81,7 @@ function virarCarta() {
 			crdSelect.style.backgroundPositionX === this.style.backgroundPositionX &&
 			crdSelect.style.backgroundPositionY === this.style.backgroundPositionY
 		) {
-			console.log('YUP');
+			// console.log('YUP');
 			this.removeEventListener('click', virarCarta);
 			crdSelect.removeEventListener('click', virarCarta);
 			this.classList.add('matched');
@@ -93,7 +93,7 @@ function virarCarta() {
 			let timeHandler = setInterval(() => {
 				crdSelect.classList.add('escondida');
 				this.classList.add('escondida');
-				console.log('NOPE');
+				// console.log('NOPE');
 				cntSelect = 0;
 				crdSelect = null;
 				clearInterval(timeHandler);
@@ -150,7 +150,7 @@ function tempo() {
 
 	let timeHandler = setInterval(() => {
 		contador++;
-		console.log(contador);
+		// console.log(contador);
 		document.getElementById('time').value = contador;
 		if (restartGame === true) {
 			contador = 0;
@@ -181,23 +181,38 @@ function tempo() {
 }
 
 // baralha as cartas no tabuleiro
-// function scramble() {
-// 	let brd = game.board;
-// 	console.log(brd.length);
-// 	for (let x = 0; x < 6; x++) {
-// 		for (let y = 0; y < 8; y++) {
-// 			if !(brd[x][y].classList.contains('matched')){
-// 				console.log("CH (" + x + ' ,' + y + ')');
-// 				do {
-// 					let rndmX = Math.floor(Math.random() * 6);
-// 					let rndmy = Math.floor(Math.random() * 8);
-// 				} while (!(brd[rndmX][rndmy].classList.contains('matched')));
-// 			} else {
-// 				console.log('MT (' + x + ' ,' + y + ')');
-// 			}
-// 		}
-// 	}
-// }
+ function scramble() {
+	let rndmX;
+	let rndmY;
+	let cont;
+ 	let brd = game.board;
+	let nboard = Array(COLS).fill().map(() => Array(ROWS));
+ 	console.log(brd.length);
+ 	for (let x = 0; x < 6; x++) {
+ 		for (let y = 0; y < 8; y++) {
+ 			if (!(brd[x][y].classList.contains('matched'))){
+				// console.log("BRD: CH (" + x + ' ,' + y + ')');
+ 				do {
+ 					 rndmX = Math.floor(Math.random() * 6);
+ 					 rndmY = Math.floor(Math.random() * 8);
+					 cont = (!(brd[rndmX][rndmY].classList.contains('matched')));
+ 				} while (cont); 
+ 			} else {
+ 				// console.log('BRD: MT (' + x + ' ,' + y + ')');
+				rndmX=x;
+				rndmy=y; 
+ 			}
+		nboard[rndmX][rndmY] = brd[x][y]
+		// console.log(nboard[rndmX][rndmY].contains('matched')? 'MT ('+ x + ' ,' + y + ')' : 'CH ('+ x +' ,'+ y +')' );
+
+ 		}
+ 	}
+	 	console.log('GB++++++++++++++++++++');
+		console.log(game.board);
+		
+		console.log('NB++++++++++++++++++++');
+	 	console.log(nboard);
+ }
 
 function showCards() {
 	let hide = document.querySelectorAll('.carta');
